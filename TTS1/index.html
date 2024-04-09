@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text-to-Speech Converter</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        text-align: center;
+        padding: 20px;
+    }
+    textarea {
+        width: 100%;
+        height: 100px;
+        margin-bottom: 10px;
+    }
+    button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h2>Text-to-Speech Converter</h2>
+    <textarea id="textInput" placeholder="Enter your text here"></textarea>
+    <button onclick="generateAudio()">Download Audio</button>
+</div>
+
+<script>
+function generateAudio() {
+    const textInput = document.getElementById('textInput').value;
+    if (!textInput.trim()) {
+        alert('Please enter some text.');
+        return;
+    }
+
+    // Making the request to create audio file
+    fetch('http://localhost:3000/create-audio', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text: textInput })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const downloadLink = document.createElement('a');
+        downloadLink.href = data.filepath;
+        downloadLink.download = 'output.mp3';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text-to-Speech Converter</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        text-align: center;
+        padding: 20px;
+    }
+    textarea {
+        width: 100%;
+        height: 100px;
+        margin-bottom: 10px;
+    }
+    button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h2>Text-to-Speech Converter</h2>
+    <textarea id="textInput" placeholder="Enter your text here"></textarea>
+    <button onclick="generateAudio()">Download Audio</button>
+</div>
+
+<script>
+function generateAudio() {
+    const textInput = document.getElementById('textInput').value.trim();
+    if (!textInput) {
+        alert('Please enter some text.');
+        return;
+    }
+
+    fetch('http://localhost:3000/create-audio', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text: textInput })
+    })
+    .then(response => {
+        // Start file download
+        response.blob().then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'output.mp3';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
+</body>
+</html>
